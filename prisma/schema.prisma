@@ -48,14 +48,18 @@ model User {
   hashedPassword    String?
   role              String    @default("USER")
   phone             String?
+  jobTitle          String?
   isActive          Boolean   @default(true)
   lastLoginAt       DateTime?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
-  accounts  Account[]
-  sessions  Session[]
-  practices Practice[]
+  accounts          Account[]
+  sessions          Session[]
+  ownedPractices    Practice[] @relation("PracticeOwner")
+  memberPractices   Practice[] @relation("PracticeMembers")
+  assessments       Assessment[]
+  evidenceFiles     EvidenceFile[]
   
   @@map(name: "users")
 }
@@ -69,7 +73,7 @@ model VerificationToken {
 }
 
 model Practice {
-  id               String   @id @default(cuid())
+  id               String      @id @default(cuid())
   name             String
   type             String
   size             String
@@ -77,9 +81,148 @@ model Practice {
   phone            String?
   email            String?
   odsCode          String?
-  isActive         Boolean  @default(true)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  cqcRating        String?
+  isActive         Boolean     @default(true)
+  subscriptionPlan String      @default("starter")
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
 
-  users            User[]
+  ownerId          String
+  owner            User         @relation("PracticeOwner", fields: [ownerId], references: [id])
+  users            User[]       @relation("PracticeMembers")
+  assessments      Assessment[]
+  policies         Policy[]
+}
+
+model Assessment {
+  id              String      @id @default(cuid())
+  title           String
+  type            String      // 'DSPT', 'GENERAL'
+  status          String      @default("DRAFT") // 'DRAFT', 'IN_PROGRESS', 'COMPLETED'
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  completedAt     DateTime?
+  
+  // Completion and scoring fields
+  overallScore    Float?      // Overall compliance score (0-100)
+  passStatus      String?     // 'PASS', 'FAIL', 'PENDING'
+  totalQuestions  Int?        // Total number of questions
+  answeredQuestions Int?      // Number of answered questions
+  passedQuestions Int?        // Number of questions answered 'YES'
+  
+  practiceId      String
+  practice        Practice    @relation(fields: [practiceId], references: [id])
+  
+  userId          String
+  user            User        @relation(fields: [userId], references: [id])
+  
+  responses       AssessmentResponse[]
+  evidenceFiles   EvidenceFile[]
+  sectionScores   SectionScore[]
+  
+  @@map(name: "assessments")
+}
+
+model AssessmentResponse {
+  id           String @id @default(cuid())
+  questionId   Int    // Changed from String to Int to match DSPTQuestion.id
+  response     String
+  evidence     String?
+  notes        String?
+  isCompliant  Boolean?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  assessmentId String
+  assessment   Assessment @relation(fields: [assessmentId], references: [id])
+  dsptQuestion DSPTQuestion? @relation(fields: [questionId], references: [id])
+}
+
+model Policy {
+  id          String    @id @default(cuid())
+  title       String
+  content     String
+  version     String    @default("1.0")
+  isActive    Boolean   @default(true)
+  approvedAt  DateTime?
+  reviewDate  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  practiceId  String
+  practice    Practice  @relation(fields: [practiceId], references: [id])
+}
+
+model DSPTSection {
+  id          Int       @id @default(autoincrement()) // Changed from String to Int
+  sectionNum  Int
+  title       String
+  description String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  questions   DSPTQuestion[]
+  
+  @@unique([sectionNum])
+  @@map(name: "dspt_sections")
+}
+
+model DSPTQuestion {
+  id              Int         @id @default(autoincrement())
+  question        String
+  evidenceHint    String?
+  isRequired      Boolean     @default(true)
+  weight          Float       @default(1.0) // Question weight for scoring
+  
+  sectionId       Int
+  section         DSPTSection @relation(fields: [sectionId], references: [id])
+  
+  responses       AssessmentResponse[]
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  @@map(name: "dspt_questions")
+}
+
+// New models for Phase 2
+model SectionScore {
+  id              String      @id @default(cuid())
+  sectionId       Int
+  sectionTitle    String
+  totalQuestions  Int
+  answeredQuestions Int
+  passedQuestions Int
+  sectionScore    Float       // Score for this section (0-100)
+  
+  assessmentId    String
+  assessment      Assessment  @relation(fields: [assessmentId], references: [id])
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  @@map(name: "section_scores")
+}
+
+model EvidenceFile {
+  id              String      @id @default(cuid())
+  fileName        String
+  originalName    String
+  fileSize        Int
+  mimeType        String
+  uploadPath      String
+  questionId      Int?        // Optional: link to specific question
+  sectionId       Int?        // Optional: link to specific section
+  
+  assessmentId    String
+  assessment      Assessment  @relation(fields: [assessmentId], references: [id])
+  
+  uploadedBy      String
+  uploader        User        @relation(fields: [uploadedBy], references: [id])
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  @@map(name: "evidence_files")
 }
