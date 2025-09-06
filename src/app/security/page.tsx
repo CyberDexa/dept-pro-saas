@@ -19,34 +19,34 @@ const securityFeatures = [
   },
   {
     name: 'UK Data Centers',
-    description: 'All data is stored in UK-based data centers, ensuring compliance with UK data sovereignty requirements.',
+    description: 'Your data stays within UK borders, hosted in secure, certified data centers that meet NHS requirements.',
     icon: ServerIcon,
   },
   {
-    name: 'Access Controls',
-    description: 'Role-based access controls and multi-factor authentication protect against unauthorized access.',
-    icon: UserGroupIcon,
+    name: 'Regular Penetration Testing',
+    description: 'Third-party security experts regularly test our systems to identify and address potential vulnerabilities.',
+    icon: EyeIcon,
   },
   {
-    name: 'Audit Logging',
-    description: 'Comprehensive audit trails track all system activities for complete visibility and compliance reporting.',
-    icon: EyeIcon,
+    name: 'Role-Based Access Control',
+    description: 'Granular permissions ensure users only access the data they need, with full audit trails of all activities.',
+    icon: UserGroupIcon,
   },
 ];
 
-const certifications = [
+const complianceStandards = [
   {
-    name: 'NHS Data Security Standards',
-    description: 'Fully compliant with NHS Data Security and Protection Toolkit requirements',
-    badge: 'NHS DSPT',
+    name: 'HIPAA Compliant',
+    description: 'Full compliance with US healthcare data protection requirements',
+    badge: 'HIPAA',
   },
   {
-    name: 'Cyber Essentials Plus',
-    description: 'Government-backed cybersecurity certification demonstrating robust security controls',
-    badge: 'CE+',
+    name: 'GDPR Compliant',
+    description: 'Meets all European data protection and privacy regulations',
+    badge: 'GDPR',
   },
   {
-    name: 'ISO 27001:2013',
+    name: 'ISO 27001 Certified',
     description: 'International standard for information security management systems',
     badge: 'ISO 27001',
   },
@@ -80,20 +80,18 @@ export default function SecurityPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-              Security by Design
+              Security at Every Layer
             </h2>
-            <p className="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
-              Every aspect of DSPT Pro is built with security as the foundation, ensuring your healthcare data remains protected at all times.
+            <p className="mt-4 text-xl text-gray-600">
+              Comprehensive security measures protecting your most sensitive data
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {securityFeatures.map((feature) => (
-              <div key={feature.name} className="bg-white p-6 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
-                <div className="flex items-center mb-4">
-                  <feature.icon className="h-8 w-8 text-blue-600" />
-                  <h3 className="ml-3 text-xl font-semibold text-gray-900">{feature.name}</h3>
-                </div>
+            {securityFeatures.map((feature, index) => (
+              <div key={index} className="bg-white p-8 rounded-lg shadow-lg border border-gray-200 hover:shadow-xl transition-shadow">
+                <feature.icon className="h-12 w-12 text-blue-600 mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">{feature.name}</h3>
                 <p className="text-gray-600">{feature.description}</p>
               </div>
             ))}
@@ -101,147 +99,56 @@ export default function SecurityPage() {
         </div>
       </div>
 
-      {/* Certifications */}
-      <div className="bg-gray-50 py-16">
+      {/* Compliance Standards */}
+      <div className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-              Industry Certifications
+              Compliance & Certifications
             </h2>
             <p className="mt-4 text-xl text-gray-600">
-              We maintain the highest security standards through continuous auditing and certification.
+              Meeting the highest standards for healthcare data protection
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {certifications.map((cert) => (
-              <div key={cert.name} className="bg-white p-6 rounded-lg border border-gray-200 text-center">
-                <div className="inline-flex items-center justify-center h-16 w-16 bg-blue-100 rounded-full mb-4">
-                  <span className="text-sm font-bold text-blue-600">{cert.badge}</span>
+            {complianceStandards.map((standard, index) => (
+              <div key={index} className="bg-white p-6 rounded-lg shadow-md text-center">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+                  <span className="text-blue-600 font-bold text-sm">{standard.badge}</span>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{cert.name}</h3>
-                <p className="text-gray-600 text-sm">{cert.description}</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{standard.name}</h3>
+                <p className="text-gray-600 text-sm">{standard.description}</p>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Security Practices */}
+      {/* Security Contact */}
       <div className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-                Comprehensive Security Practices
-              </h2>
-              <p className="mt-4 text-lg text-gray-600">
-                Our security program encompasses every aspect of data protection, from infrastructure security to employee training.
-              </p>
-              
-              <div className="mt-8 space-y-6">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <div className="flex items-center justify-center h-8 w-8 rounded-md bg-blue-500 text-white">
-                      <span className="text-sm font-bold">1</span>
-                    </div>
-                  </div>
-                  <div className="ml-4">
-                    <h3 className="text-lg font-medium text-gray-900">Data Encryption</h3>
-                    <p className="mt-2 text-gray-600">All data encrypted at rest and in transit using industry-standard AES-256 encryption.</p>
-                  </div>
-                </div>
-
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <div className="flex items-center justify-center h-8 w-8 rounded-md bg-blue-500 text-white">
-                      <span className="text-sm font-bold">2</span>
-                    </div>
-                  </div>
-                  <div className="ml-4">
-                    <h3 className="text-lg font-medium text-gray-900">Access Management</h3>
-                    <p className="mt-2 text-gray-600">Role-based access controls with multi-factor authentication and regular access reviews.</p>
-                  </div>
-                </div>
-
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <div className="flex items-center justify-center h-8 w-8 rounded-md bg-blue-500 text-white">
-                      <span className="text-sm font-bold">3</span>
-                    </div>
-                  </div>
-                  <div className="ml-4">
-                    <h3 className="text-lg font-medium text-gray-900">Continuous Monitoring</h3>
-                    <p className="mt-2 text-gray-600">24/7 security monitoring with automated threat detection and incident response.</p>
-                  </div>
-                </div>
-
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <div className="flex items-center justify-center h-8 w-8 rounded-md bg-blue-500 text-white">
-                      <span className="text-sm font-bold">4</span>
-                    </div>
-                  </div>
-                  <div className="ml-4">
-                    <h3 className="text-lg font-medium text-gray-900">Regular Audits</h3>
-                    <p className="mt-2 text-gray-600">Independent security audits and penetration testing conducted quarterly.</p>
-                  </div>
-                </div>
-              </div>
+          <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Security Questions?
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Our security team is available to discuss your specific requirements and answer any questions about our security measures.
+            </p>
+            <div className="space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-center">
+              <Link
+                href="/contact"
+                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+              >
+                Contact Security Team
+              </Link>
+              <Link
+                href="/docs"
+                className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              >
+                Security Documentation
+              </Link>
             </div>
-
-            <div className="mt-10 lg:mt-0">
-              <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg p-8 text-white">
-                <h3 className="text-2xl font-bold mb-4">Security Incident Response</h3>
-                <p className="mb-6">
-                  Our dedicated security team monitors your data 24/7, with automated incident response and immediate notification of any security events.
-                </p>
-                <div className="space-y-3">
-                  <div className="flex items-center">
-                    <ShieldCheckIcon className="h-5 w-5 mr-3" />
-                    <span>< 5 minute incident detection</span>
-                  </div>
-                  <div className="flex items-center">
-                    <ShieldCheckIcon className="h-5 w-5 mr-3" />
-                    <span>Immediate automated response</span>
-                  </div>
-                  <div className="flex items-center">
-                    <ShieldCheckIcon className="h-5 w-5 mr-3" />
-                    <span>24/7 security operations center</span>
-                  </div>
-                  <div className="flex items-center">
-                    <ShieldCheckIcon className="h-5 w-5 mr-3" />
-                    <span>Detailed incident reporting</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* CTA Section */}
-      <div className="bg-blue-600 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-white sm:text-4xl">
-            Ready to Secure Your Healthcare Data?
-          </h2>
-          <p className="mt-4 text-xl text-blue-100 max-w-3xl mx-auto">
-            Join hundreds of healthcare practices already protecting their data with DSPT Pro's enterprise security platform.
-          </p>
-          <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/signup"
-              className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-600 bg-white hover:bg-gray-50 transition-colors"
-            >
-              Start Free Trial
-            </Link>
-            <Link
-              href="/contact"
-              className="inline-flex items-center justify-center px-8 py-3 border border-white text-base font-medium rounded-md text-white hover:bg-blue-700 transition-colors"
-            >
-              Contact Security Team
-            </Link>
           </div>
         </div>
       </div>
