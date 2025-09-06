@@ -1,0 +1,13 @@
+# Copy these to Vercel Environment Variables
+
+# 1. NextAuth Secret (Required)
+NEXTAUTH_SECRET=Gk9k4j9ceQJZa306OD6aS+YlpqN8KL5pmaQ7E+BkVdc=
+
+# 2. NextAuth URL (Required) 
+NEXTAUTH_URL=https://dspt-pro-saas-h83pm2trz-cyberdexas-projects.vercel.app
+
+# 3. Database URL (Get this from Neon)
+DATABASE_URL=postgresql://username:password@host:port/database?sslmode=require
+
+# 4. Node Environment
+NODE_ENV=production
