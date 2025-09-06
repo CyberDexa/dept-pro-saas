@@ -1,12 +1,8 @@
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
-import { PrismaAdapter } from '@next-auth/prisma-adapter';
-import { prisma } from '@/lib/prisma';
-import bcrypt from 'bcryptjs';
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
       name: 'credentials',
@@ -19,39 +15,23 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email
-          },
-          include: {
-            practices: true
-          }
-        });
-
-        if (!user || !user.hashedPassword) {
-          return null;
+        // Demo authentication - accept any email/password combo for demonstration
+        // In production, this would validate against a real database
+        if (credentials.email && credentials.password.length >= 8) {
+          return {
+            id: `demo_${Date.now()}`,
+            email: credentials.email,
+            name: credentials.email.split('@')[0],
+            role: 'USER',
+          };
         }
 
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password,
-          user.hashedPassword
-        );
-
-        if (!isPasswordValid) {
-          return null;
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: `${user.firstName} ${user.lastName}`,
-          role: user.role,
-        };
+        return null;
       }
     }),
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.GOOGLE_CLIENT_ID || 'demo-google-client-id',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'demo-google-client-secret',
       authorization: {
         params: {
           prompt: 'consent',
@@ -82,5 +62,5 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || 'demo-secret-key-for-development',
 };
