@@ -167,7 +167,11 @@ export default function SignupPage() {
         return;
       }
 
-      // Account created successfully, redirect to login
+      // Account created successfully
+      if (data.note) {
+        // Demo environment message
+        alert(`${data.message}\n\n${data.note}`);
+      }
       router.push('/login?message=Account created successfully. Please sign in.');
     } catch (error) {
       console.error('Signup error:', error);
