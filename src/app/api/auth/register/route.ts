@@ -18,6 +18,15 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if database is available
+    if (!process.env.DATABASE_URL) {
+      console.error('DATABASE_URL not configured');
+      return NextResponse.json(
+        { error: 'Database configuration missing. Please contact support.' },
+        { status: 500 }
+      );
+    }
+
     const body = await request.json();
     console.log('Registration request:', { ...body, password: '[HIDDEN]' });
     
