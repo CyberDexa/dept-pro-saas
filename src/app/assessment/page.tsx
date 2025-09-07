@@ -62,6 +62,7 @@ export default function DSPTAssessmentPage() {
       if (response.ok) {
         const data = await response.json();
         console.log('Fetched sections:', data); // Debug log
+        console.log('First section questions:', data[0]?.questions || 'No questions'); // Debug log
         setSections(data);
       } else {
         console.error('Failed to fetch DSPT sections, status:', response.status);
