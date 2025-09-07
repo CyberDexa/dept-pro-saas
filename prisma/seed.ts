@@ -211,9 +211,12 @@ async function main() {
       await prisma.dSPTQuestion.create({
         data: {
           sectionId: section.id,
+          questionNum: question.questionNum,
           question: question.question,
+          description: question.description,
           evidenceHint: question.evidenceHint,
           weight: question.weight || 1.0,
+          questionType: question.questionType || 'YESNO',
           isRequired: true
         }
       });

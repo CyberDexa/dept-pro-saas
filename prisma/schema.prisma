@@ -170,10 +170,13 @@ model DSPTSection {
 
 model DSPTQuestion {
   id              Int         @id @default(autoincrement())
+  questionNum     String      // Question number like "1.1.1"
   question        String
+  description     String?     // Additional description for the question
   evidenceHint    String?
-  isRequired      Boolean     @default(true)
   weight          Float       @default(1.0) // Question weight for scoring
+  questionType    String      @default("YESNO") // Type of question (YESNO, etc.)
+  isRequired      Boolean     @default(true)
   
   sectionId       Int
   section         DSPTSection @relation(fields: [sectionId], references: [id])

@@ -15,7 +15,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 interface DSPTQuestion {
-  id: string;
+  id: number;
   questionNum: string;
   question: string;
   description?: string;
@@ -25,7 +25,7 @@ interface DSPTQuestion {
 }
 
 interface DSPTSection {
-  id: string;
+  id: number;
   sectionNum: number;
   title: string;
   description?: string;
@@ -75,7 +75,7 @@ export default function DSPTAssessmentPage() {
     }
   };
 
-  const handleResponse = (questionId: string, response: string, evidence?: string) => {
+  const handleResponse = (questionId: number, response: string, evidence?: string) => {
     setResponses(prev => ({
       ...prev,
       [questionId]: {
