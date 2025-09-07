@@ -426,8 +426,10 @@ export default function DSPTAssessmentPage() {
             {sections.map((section, index) => {
               if (!section || !section.questions) return null;
               
-              const sectionCompleted = section.questions.every(q => q && responses[q.id]?.response);
-              const sectionInProgress = section.questions.some(q => q && responses[q.id]?.response);
+              // Handle empty sections properly - they should not appear completed
+              const hasQuestions = section.questions.length > 0;
+              const sectionCompleted = hasQuestions && section.questions.every(q => q && responses[q.id]?.response);
+              const sectionInProgress = hasQuestions && section.questions.some(q => q && responses[q.id]?.response);
               
               return (
                 <div
@@ -450,8 +452,11 @@ export default function DSPTAssessmentPage() {
                 >
                   <div className="text-sm font-medium">Section {section.sectionNum}</div>
                   <div className="text-xs text-gray-600 mt-1">{section.title}</div>
+                  <div className="text-xs text-gray-500 mt-1">{section.questions.length} questions</div>
                   <div className="mt-2">
-                    {sectionCompleted ? (
+                    {!hasQuestions ? (
+                      <div className="w-4 h-4 bg-gray-300 rounded-full mx-auto" title="No questions available"></div>
+                    ) : sectionCompleted ? (
                       <CheckCircleIcon className="w-4 h-4 text-green-600 mx-auto" />
                     ) : sectionInProgress ? (
                       <ClockIcon className="w-4 h-4 text-yellow-600 mx-auto" />

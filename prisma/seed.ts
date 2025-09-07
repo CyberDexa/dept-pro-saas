@@ -181,6 +181,106 @@ const dsptQuestions = [
     evidenceHint: "Provide evidence of vulnerability remediation processes and timelines.",
     weight: 2,
     questionType: "YESNO"
+  },
+  
+  // Section 6: Protective monitoring
+  {
+    sectionNum: 6,
+    questionNum: "6.1.1",
+    question: "Do you monitor access to your systems and networks?",
+    description: "Monitoring should detect unauthorized access attempts and suspicious activities.",
+    evidenceHint: "Provide evidence of monitoring systems and logs showing access monitoring is in place.",
+    weight: 2,
+    questionType: "YESNO"
+  },
+  {
+    sectionNum: 6,
+    questionNum: "6.1.2",
+    question: "Do you have processes to respond to security alerts and incidents?",
+    description: "Clear procedures should be in place for responding to security events.",
+    evidenceHint: "Provide incident response procedures and evidence of their implementation.",
+    weight: 2,
+    questionType: "YESNO"
+  },
+  
+  // Section 7: Incident management
+  {
+    sectionNum: 7,
+    questionNum: "7.1.1",
+    question: "Do you have a documented incident response plan?",
+    description: "The plan should cover identification, containment, investigation, and recovery from security incidents.",
+    evidenceHint: "Provide the incident response plan document and evidence of staff training.",
+    weight: 3,
+    questionType: "YESNO"
+  },
+  {
+    sectionNum: 7,
+    questionNum: "7.1.2",
+    question: "Do you regularly test your incident response procedures?",
+    description: "Testing ensures the plan is effective and staff are prepared.",
+    evidenceHint: "Provide evidence of incident response exercises or simulations conducted.",
+    weight: 2,
+    questionType: "YESNO"
+  },
+  
+  // Section 8: Network security
+  {
+    sectionNum: 8,
+    questionNum: "8.1.1",
+    question: "Do you use firewalls or network access controls?",
+    description: "Network perimeter security controls should be implemented to protect against unauthorized access.",
+    evidenceHint: "Provide evidence of firewall configurations and network security controls.",
+    weight: 3,
+    questionType: "YESNO"
+  },
+  {
+    sectionNum: 8,
+    questionNum: "8.1.2",
+    question: "Do you secure wireless networks appropriately?",
+    description: "Wireless networks should use strong encryption and access controls.",
+    evidenceHint: "Provide evidence of wireless network security configuration and policies.",
+    weight: 2,
+    questionType: "YESNO"
+  },
+  
+  // Section 9: User education and awareness
+  {
+    sectionNum: 9,
+    questionNum: "9.1.1",
+    question: "Do you provide security awareness training to all staff?",
+    description: "Regular training ensures staff understand their security responsibilities.",
+    evidenceHint: "Provide evidence of security training programs and attendance records.",
+    weight: 2,
+    questionType: "YESNO"
+  },
+  {
+    sectionNum: 9,
+    questionNum: "9.1.2",
+    question: "Do you have policies for acceptable use of IT systems?",
+    description: "Clear policies should define what is and isn't acceptable use of organizational IT resources.",
+    evidenceHint: "Provide acceptable use policies and evidence that staff have acknowledged them.",
+    weight: 2,
+    questionType: "YESNO"
+  },
+  
+  // Section 10: Home and mobile working
+  {
+    sectionNum: 10,
+    questionNum: "10.1.1",
+    question: "Do you have policies for secure home and mobile working?",
+    description: "Policies should address the security risks of working outside the office environment.",
+    evidenceHint: "Provide home/mobile working policies and evidence of their implementation.",
+    weight: 2,
+    questionType: "YESNO"
+  },
+  {
+    sectionNum: 10,
+    questionNum: "10.1.2",
+    question: "Do you ensure mobile devices are secured appropriately?",
+    description: "Mobile devices should have appropriate security controls including encryption and access controls.",
+    evidenceHint: "Provide evidence of mobile device security policies and technical controls.",
+    weight: 2,
+    questionType: "YESNO"
   }
 ];
 
