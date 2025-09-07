@@ -27,7 +27,7 @@ export async function GET() {
       }
     });
 
-    return NextResponse.json({ sections });
+    return NextResponse.json(sections);
   } catch (error) {
     console.error('Error fetching DSPT sections:', error);
     return NextResponse.json(

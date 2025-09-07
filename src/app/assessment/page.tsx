@@ -61,9 +61,12 @@ export default function DSPTAssessmentPage() {
       const response = await fetch('/api/dspt/sections');
       if (response.ok) {
         const data = await response.json();
+        console.log('Fetched sections:', data); // Debug log
         setSections(data);
       } else {
-        console.error('Failed to fetch DSPT sections');
+        console.error('Failed to fetch DSPT sections, status:', response.status);
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
       }
     } catch (error) {
       console.error('Error fetching DSPT sections:', error);
