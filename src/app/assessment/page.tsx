@@ -91,11 +91,16 @@ export default function DSPTAssessmentPage() {
     if (sections.length === 0) return;
     
     const currentSectionData = sections[currentSection];
+    if (!currentSectionData || !currentSectionData.questions) return;
+    
     if (currentQuestion < currentSectionData.questions.length - 1) {
       setCurrentQuestion(prev => prev + 1);
     } else if (currentSection < sections.length - 1) {
-      setCurrentSection(prev => prev + 1);
-      setCurrentQuestion(0);
+      const nextSectionData = sections[currentSection + 1];
+      if (nextSectionData && nextSectionData.questions && nextSectionData.questions.length > 0) {
+        setCurrentSection(prev => prev + 1);
+        setCurrentQuestion(0);
+      }
     }
   };
 
@@ -103,14 +108,25 @@ export default function DSPTAssessmentPage() {
     if (currentQuestion > 0) {
       setCurrentQuestion(prev => prev - 1);
     } else if (currentSection > 0) {
-      setCurrentSection(prev => prev - 1);
-      setCurrentQuestion(sections[currentSection - 1].questions.length - 1);
+      const previousSectionData = sections[currentSection - 1];
+      if (previousSectionData && previousSectionData.questions) {
+        setCurrentSection(prev => prev - 1);
+        setCurrentQuestion(previousSectionData.questions.length - 1);
+      }
     }
   };
 
   const calculateProgress = () => {
-    const totalQuestions = sections.reduce((sum, section) => sum + section.questions.length, 0);
-    const currentQuestionIndex = sections.slice(0, currentSection).reduce((sum, section) => sum + section.questions.length, 0) + currentQuestion;
+    if (sections.length === 0) return 0;
+    
+    const totalQuestions = sections.reduce((sum, section) => {
+      return sum + (section.questions?.length || 0);
+    }, 0);
+    
+    const currentQuestionIndex = sections.slice(0, currentSection).reduce((sum, section) => {
+      return sum + (section.questions?.length || 0);
+    }, 0) + currentQuestion;
+    
     return totalQuestions > 0 ? (currentQuestionIndex / totalQuestions) * 100 : 0;
   };
 
@@ -146,8 +162,13 @@ export default function DSPTAssessmentPage() {
   };
 
   const getAllQuestions = () => {
+    if (sections.length === 0) return [];
+    
     return sections.reduce((allQuestions: DSPTQuestion[], section) => {
-      return [...allQuestions, ...section.questions];
+      if (section.questions && Array.isArray(section.questions)) {
+        return [...allQuestions, ...section.questions];
+      }
+      return allQuestions;
     }, []);
   };
 
@@ -227,7 +248,29 @@ export default function DSPTAssessmentPage() {
   }
 
   const currentSectionData = sections[currentSection];
+  if (!currentSectionData || !currentSectionData.questions || currentSectionData.questions.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <ClockIcon className="w-12 h-12 text-blue-600 mx-auto mb-4 animate-spin" />
+          <p className="text-gray-600">Loading section data...</p>
+        </div>
+      </div>
+    );
+  }
+  
   const currentQuestionData = currentSectionData.questions[currentQuestion];
+  if (!currentQuestionData) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <ClockIcon className="w-12 h-12 text-blue-600 mx-auto mb-4 animate-spin" />
+          <p className="text-gray-600">Loading question data...</p>
+        </div>
+      </div>
+    );
+  }
+  
   const currentResponse = responses[currentQuestionData.id];
 
   return (
@@ -381,8 +424,10 @@ export default function DSPTAssessmentPage() {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Assessment Sections</h3>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             {sections.map((section, index) => {
-              const sectionCompleted = section.questions.every(q => responses[q.id]?.response);
-              const sectionInProgress = section.questions.some(q => responses[q.id]?.response);
+              if (!section || !section.questions) return null;
+              
+              const sectionCompleted = section.questions.every(q => q && responses[q.id]?.response);
+              const sectionInProgress = section.questions.some(q => q && responses[q.id]?.response);
               
               return (
                 <div
@@ -397,8 +442,10 @@ export default function DSPTAssessmentPage() {
                       : 'border-gray-200'
                   }`}
                   onClick={() => {
-                    setCurrentSection(index);
-                    setCurrentQuestion(0);
+                    if (sections[index] && sections[index].questions && sections[index].questions.length > 0) {
+                      setCurrentSection(index);
+                      setCurrentQuestion(0);
+                    }
                   }}
                 >
                   <div className="text-sm font-medium">Section {section.sectionNum}</div>
