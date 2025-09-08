@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Verify assessment ownership
+    // Verify assessment ownership and get with responses
     const assessment = await (prisma as any).assessment.findFirst({
       where: {
         id: assessmentId,
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     // Calculate scores
     const totalQuestions = allQuestions.length;
     const answeredQuestions = assessment.responses.length;
-    const passedQuestions = assessment.responses.filter(r => r.response === 'YES').length;
+    const passedQuestions = assessment.responses.filter((r: any) => r.response === 'YES').length;
     
     // Calculate section scores
     const sectionScores = new Map();
@@ -108,8 +108,7 @@ export async function POST(request: NextRequest) {
     // Calculate overall score
     const overallScore = totalQuestions > 0 ? (passedQuestions / totalQuestions) * 100 : 0;
     
-    // Determine pass status (in real DSPT, this is more complex)
-    // For simplicity, requiring 80% overall compliance
+    // Determine pass status (requiring 80% overall compliance)
     const passStatus = overallScore >= 80 ? 'PASS' : 'FAIL';
 
     // Update assessment with completion data
