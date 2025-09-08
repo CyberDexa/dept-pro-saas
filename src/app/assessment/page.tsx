@@ -43,6 +43,7 @@ export default function DSPTAssessmentPage() {
   const [saving, setSaving] = useState(false);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [completing, setCompleting] = useState(false);
+  const [assessmentId, setAssessmentId] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -147,6 +148,12 @@ export default function DSPTAssessmentPage() {
       if (response.ok) {
         const data = await response.json();
         console.log('Progress saved successfully:', data);
+        
+        // Store the assessment ID for later use
+        if (data.assessment?.id) {
+          setAssessmentId(data.assessment.id);
+        }
+        
         // You could show a success toast here
         alert('Progress saved successfully!');
       } else {
@@ -191,6 +198,14 @@ export default function DSPTAssessmentPage() {
       // First save any remaining progress
       await saveProgress();
       
+      // Check if we have an assessment ID
+      if (!assessmentId) {
+        console.error('No assessment ID available');
+        alert('Please save your progress first before completing the assessment.');
+        setCompleting(false);
+        return;
+      }
+      
       // Then complete the assessment
       const response = await fetch('/api/dspt/complete', {
         method: 'POST',
@@ -198,7 +213,7 @@ export default function DSPTAssessmentPage() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          assessmentId: 'current_assessment' // This should be the actual assessment ID
+          assessmentId: assessmentId
         })
       });
 

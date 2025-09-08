@@ -56,14 +56,30 @@ export async function POST(request: NextRequest) {
 
     // Save responses
     const savedResponses = [];
+    
+    // Clear existing responses for this assessment
+    await (prisma as any).assessmentResponse.deleteMany({
+      where: { assessmentId: assessment.id }
+    });
+    
     for (const [questionId, responseData] of Object.entries(responses as Record<string, any>)) {
-      // For demo purposes, we'll save to a simple format
-      // In production, you'd save to AssessmentResponse table
+      // Save to AssessmentResponse table
+      const savedResponse = await (prisma as any).assessmentResponse.create({
+        data: {
+          assessmentId: assessment.id,
+          questionId: parseInt(questionId),
+          response: responseData.response,
+          evidence: responseData.evidence || null,
+          notes: responseData.notes || null,
+          isCompliant: responseData.response === 'YES'
+        }
+      });
+      
       savedResponses.push({
         questionId,
         response: responseData.response,
         evidence: responseData.evidence,
-        isCompliant: responseData.isCompliant
+        isCompliant: responseData.response === 'YES'
       });
     }
 
