@@ -63,6 +63,13 @@ export async function POST(request: NextRequest) {
     const answeredQuestions = assessment.responses.length;
     const passedQuestions = assessment.responses.filter((r: any) => r.response === 'YES').length;
     
+    console.log('Assessment completion debug:', {
+      totalQuestions,
+      answeredQuestions,
+      passedQuestions,
+      responses: assessment.responses.map((r: any) => ({ id: r.id, response: r.response, isCompliant: r.isCompliant }))
+    });
+    
     // Calculate section scores
     const sectionScores = new Map();
     

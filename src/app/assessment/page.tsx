@@ -195,13 +195,35 @@ export default function DSPTAssessmentPage() {
   const completeAssessment = async () => {
     setCompleting(true);
     try {
-      // First save any remaining progress
-      await saveProgress();
+      // First save any remaining progress and get the assessment ID
+      const saveResponse = await fetch('/api/dspt/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          responses: responses,
+          assessmentTitle: `DSPT Assessment - ${new Date().toLocaleDateString()}`
+        })
+      });
+
+      let currentAssessmentId = assessmentId;
+      
+      if (saveResponse.ok) {
+        const saveData = await saveResponse.json();
+        console.log('Progress saved successfully:', saveData);
+        
+        // Get the assessment ID from the save response
+        if (saveData.assessment?.id) {
+          currentAssessmentId = saveData.assessment.id;
+          setAssessmentId(currentAssessmentId);
+        }
+      }
       
       // Check if we have an assessment ID
-      if (!assessmentId) {
+      if (!currentAssessmentId) {
         console.error('No assessment ID available');
-        alert('Please save your progress first before completing the assessment.');
+        alert('Unable to get assessment ID. Please try again.');
         setCompleting(false);
         return;
       }
@@ -213,7 +235,7 @@ export default function DSPTAssessmentPage() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          assessmentId: assessmentId
+          assessmentId: currentAssessmentId
         })
       });
 

@@ -50,6 +50,71 @@ function AssessmentResultsContent() {
     }
   }, [assessmentId]);
 
+  const downloadReport = () => {
+    if (!results) return;
+    
+    // Create a simple HTML report
+    const reportContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>DSPT Assessment Report</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 40px; }
+          .header { text-align: center; margin-bottom: 30px; }
+          .summary { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+          .section { margin-bottom: 20px; padding: 15px; border: 1px solid #e5e7eb; border-radius: 8px; }
+          .compliant { color: #10b981; }
+          .non-compliant { color: #ef4444; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>DSPT Assessment Report</h1>
+          <p>Completed on ${new Date(results.completionSummary.completedAt).toLocaleDateString()}</p>
+          <p class="${results.completionSummary.passStatus === 'PASS' ? 'compliant' : 'non-compliant'}">
+            Status: ${results.completionSummary.passStatus}
+          </p>
+        </div>
+        
+        <div class="summary">
+          <h2>Overall Summary</h2>
+          <p><strong>Total Questions:</strong> ${results.completionSummary.totalQuestions}</p>
+          <p><strong>Questions Answered:</strong> ${results.completionSummary.answeredQuestions}</p>
+          <p><strong>Compliant Responses:</strong> ${results.completionSummary.passedQuestions}</p>
+          <p><strong>Overall Score:</strong> ${results.completionSummary.overallScore.toFixed(1)}%</p>
+        </div>
+        
+        <h2>Section Breakdown</h2>
+        ${results.sectionScores.map(section => `
+          <div class="section">
+            <h3>${section.sectionTitle}</h3>
+            <p><strong>Questions:</strong> ${section.answeredQuestions}/${section.totalQuestions}</p>
+            <p><strong>Compliant:</strong> ${section.passedQuestions}</p>
+            <p><strong>Score:</strong> ${section.sectionScore.toFixed(1)}%</p>
+          </div>
+        `).join('')}
+      </body>
+      </html>
+    `;
+    
+    // Create and download the file
+    const blob = new Blob([reportContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `DSPT-Assessment-Report-${new Date().toISOString().split('T')[0]}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const viewDetailedAnalysis = () => {
+    // Navigate to analytics page
+    window.location.href = '/analytics';
+  };
+
   const fetchResults = async () => {
     try {
       const response = await fetch(`/api/dspt/results?id=${assessmentId}`);
@@ -241,12 +306,18 @@ function AssessmentResultsContent() {
 
         {/* Action Buttons */}
         <div className="flex gap-4">
-          <button className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
+          <button 
+            onClick={downloadReport}
+            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+          >
             <DocumentArrowDownIcon className="h-5 w-5 mr-2" />
             Download Report
           </button>
           
-          <button className="inline-flex items-center px-6 py-3 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors">
+          <button 
+            onClick={viewDetailedAnalysis}
+            className="inline-flex items-center px-6 py-3 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors"
+          >
             <ChartBarIcon className="h-5 w-5 mr-2" />
             View Detailed Analysis
           </button>
