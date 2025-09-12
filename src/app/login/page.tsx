@@ -119,13 +119,6 @@ function LoginForm() {
               </div>
             </div>
           )}
-
-          {/* Demo Notice */}
-          <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div className="text-sm text-blue-800">
-              <strong>Demo Environment:</strong> You can sign in with any email address and a password of at least 8 characters. This is for demonstration purposes only.
-            </div>
-          </div>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email */}
