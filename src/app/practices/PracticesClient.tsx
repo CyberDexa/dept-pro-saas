@@ -70,10 +70,11 @@ export default function PracticesClient() {
         throw new Error("Failed to fetch practices");
       }
       const data = await response.json();
-      setPractices(data);
+      setPractices(data.practices || []);
     } catch (error) {
       console.error("Error fetching practices:", error);
       setError("Failed to load practices");
+      setPractices([]); // Set empty array on error
     } finally {
       setLoading(false);
     }

@@ -54,13 +54,21 @@ export async function GET() {
     const ownedPractices = user.ownedPractices.map(practice => ({
       ...practice,
       role: 'owner',
-      canManage: true
+      canManage: true,
+      _count: {
+        members: practice._count.users,
+        assessments: practice._count.assessments
+      }
     }));
 
     const memberPractices = user.memberPractices.map(practice => ({
       ...practice,
       role: 'member',
-      canManage: false
+      canManage: false,
+      _count: {
+        members: practice._count.users,
+        assessments: practice._count.assessments
+      }
     }));
 
     const allPractices = [...ownedPractices, ...memberPractices];
