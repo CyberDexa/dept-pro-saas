@@ -239,7 +239,7 @@ export default function DashboardPage() {
                       </div>
                     </button>
                     <button 
-                      onClick={() => alert('Feature coming soon!')}
+                      onClick={() => router.push('/practices')}
                       className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       <div className="flex items-center">

@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
           response: responseData.response,
           evidence: responseData.evidence || null,
           notes: responseData.notes || null,
-          isCompliant: responseData.response === 'YES'
+          isCompliant: responseData.response?.toLowerCase() === 'yes'
         }
       });
       
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
         questionId,
         response: responseData.response,
         evidence: responseData.evidence,
-        isCompliant: responseData.response === 'YES'
+        isCompliant: responseData.response?.toLowerCase() === 'yes'
       });
     }
 

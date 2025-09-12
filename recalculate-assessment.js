@@ -1,39 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+const { PrismaClient } = require('@prisma/client');
 
-export const dynamic = 'force-dynamic';
+const prisma = new PrismaClient();
 
-export async function POST(request: NextRequest) {
+async function recalculateAssessment() {
   try {
-    const session = await getServerSession(authOptions);
+    console.log('=== RECALCULATING ASSESSMENT SCORES ===\n');
     
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { assessmentId } = await request.json();
-
-    if (!assessmentId) {
-      return NextResponse.json({ error: 'Assessment ID is required' }, { status: 400 });
-    }
-
-    // Get user
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    // Verify assessment ownership and get with responses
-    const assessment = await (prisma as any).assessment.findFirst({
-      where: {
-        id: assessmentId,
-        userId: user.id
-      },
+    // Get the latest assessment
+    const assessment = await prisma.assessment.findFirst({
+      orderBy: { updatedAt: 'desc' },
       include: {
         responses: {
           include: {
@@ -48,11 +23,14 @@ export async function POST(request: NextRequest) {
     });
 
     if (!assessment) {
-      return NextResponse.json({ error: 'Assessment not found or access denied' }, { status: 404 });
+      console.log('No assessment found');
+      return;
     }
 
-    // Get all DSPT questions to check completeness
-    const allQuestions = await (prisma as any).dSPTQuestion.findMany({
+    console.log(`Recalculating assessment: ${assessment.id}`);
+    
+    // Get all DSPT questions
+    const allQuestions = await prisma.dSPTQuestion.findMany({
       include: {
         section: true
       }
@@ -61,15 +39,11 @@ export async function POST(request: NextRequest) {
     // Calculate scores
     const totalQuestions = allQuestions.length;
     const answeredQuestions = assessment.responses.length;
-    const passedQuestions = assessment.responses.filter((r: any) => r.isCompliant === true).length;
+    const passedQuestions = assessment.responses.filter(r => r.isCompliant === true).length;
     
-    console.log('Assessment completion debug:', {
-      totalQuestions,
-      answeredQuestions,
-      passedQuestions,
-      compliantResponses: assessment.responses.filter((r: any) => r.isCompliant === true).length,
-      responses: assessment.responses.map((r: any) => ({ id: r.id, response: r.response, isCompliant: r.isCompliant }))
-    });
+    console.log(`- Total Questions: ${totalQuestions}`);
+    console.log(`- Answered Questions: ${answeredQuestions}`);
+    console.log(`- Passed Questions: ${passedQuestions}`);
     
     // Calculate section scores
     const sectionScores = new Map();
@@ -104,7 +78,7 @@ export async function POST(request: NextRequest) {
       sectionsQuestionsCount.set(sectionId, (sectionsQuestionsCount.get(sectionId) || 0) + 1);
     }
 
-    // Update section scores with total questions
+    // Update section scores with total questions and calculate percentages
     const sectionEntriesArray = Array.from(sectionScores.entries());
     for (const [sectionId, sectionData] of sectionEntriesArray) {
       sectionData.totalQuestions = sectionsQuestionsCount.get(sectionId) || 0;
@@ -116,15 +90,16 @@ export async function POST(request: NextRequest) {
     // Calculate overall score
     const overallScore = totalQuestions > 0 ? (passedQuestions / totalQuestions) * 100 : 0;
     
-    // Determine pass status (requiring 80% overall compliance)
+    // Determine pass status
     const passStatus = overallScore >= 80 ? 'PASS' : 'FAIL';
 
+    console.log(`- Overall Score: ${overallScore.toFixed(1)}%`);
+    console.log(`- Pass Status: ${passStatus}\n`);
+
     // Update assessment with completion data
-    const completedAssessment = await (prisma as any).assessment.update({
-      where: { id: assessmentId },
+    const updatedAssessment = await prisma.assessment.update({
+      where: { id: assessment.id },
       data: {
-        status: 'COMPLETED',
-        completedAt: new Date(),
         overallScore,
         passStatus,
         totalQuestions,
@@ -133,12 +108,18 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Create section score records
+    // Clear existing section scores
+    await prisma.sectionScore.deleteMany({
+      where: { assessmentId: assessment.id }
+    });
+
+    // Create new section score records
+    console.log('Section Scores:');
     const sectionScoreArray = Array.from(sectionScores.entries());
     for (const [_, sectionData] of sectionScoreArray) {
-      await (prisma as any).sectionScore.create({
+      await prisma.sectionScore.create({
         data: {
-          assessmentId: assessmentId,
+          assessmentId: assessment.id,
           sectionId: sectionData.sectionId,
           sectionTitle: sectionData.sectionTitle,
           totalQuestions: sectionData.totalQuestions,
@@ -147,27 +128,17 @@ export async function POST(request: NextRequest) {
           sectionScore: sectionData.sectionScore
         }
       });
+      
+      console.log(`- ${sectionData.sectionTitle}: ${sectionData.passedQuestions}/${sectionData.totalQuestions} (${sectionData.sectionScore.toFixed(1)}%)`);
     }
 
-    return NextResponse.json({
-      success: true,
-      assessment: completedAssessment,
-      sectionScores: Array.from(sectionScores.values()),
-      completionSummary: {
-        totalQuestions,
-        answeredQuestions,
-        passedQuestions,
-        overallScore,
-        passStatus,
-        completedAt: completedAssessment.completedAt
-      }
-    });
+    console.log('\n✅ Assessment scores recalculated successfully!');
 
   } catch (error) {
-    console.error('Error completing assessment:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error('Error:', error);
+  } finally {
+    await prisma.$disconnect();
   }
 }
+
+recalculateAssessment();
